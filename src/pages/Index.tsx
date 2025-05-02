@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { KnowledgeBase, TestCase, TestRunResult } from '@/lib/types';
 import { defaultKnowledgeBase, sampleTestCases, sampleTestResults } from '@/lib/mockData';
 import { toast } from 'sonner';
+import { Database, Play, FileText, Bug, ChevronRight } from 'lucide-react';
 
 const Index = () => {
   const [url, setUrl] = useState<string | null>(null);
@@ -108,56 +109,104 @@ const Index = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl">
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold mb-2">Test Case Navigator Dashboard</h1>
-        <p className="text-muted-foreground">Generate, manage, and execute test cases based on your knowledge base</p>
-      </div>
-      
-      {/* URL Input Section */}
-      <div className="mb-6">
-        <UrlInput onUrlSubmit={handleUrlSubmit} />
-      </div>
-      
-      {/* Generate button */}
-      <div className="mb-6 flex justify-center">
-        <Button 
-          size="lg"
-          onClick={generateTestCases}
-          disabled={!url || isGenerating}
-        >
-          {isGenerating ? 'Generating...' : 'Generate Test Cases'}
-        </Button>
-      </div>
-      
-      {/* Main Content Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid grid-cols-3 mb-6">
-          <TabsTrigger value="knowledge-base">Knowledge Base</TabsTrigger>
-          <TabsTrigger value="test-cases">Test Cases</TabsTrigger>
-          <TabsTrigger value="results">Results</TabsTrigger>
-        </TabsList>
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-4 py-8 max-w-6xl">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl md:text-4xl font-bold mb-2 bg-gradient-to-r from-primary to-purple-500 bg-clip-text text-transparent">AI QA Engineer Dashboard</h1>
+          <p className="text-muted-foreground">Automate your testing workflow with AI-powered web crawling and test generation</p>
+        </div>
         
-        <TabsContent value="knowledge-base">
-          <KnowledgeBaseEditor
-            initialKnowledgeBase={knowledgeBase}
-            onUpdate={handleKnowledgeBaseUpdate}
-          />
-        </TabsContent>
+        <div className="bg-card rounded-lg border shadow-sm p-6 mb-8">
+          <div className="flex flex-col space-y-6">
+            {/* URL Input Section */}
+            <UrlInput onUrlSubmit={handleUrlSubmit} />
+            
+            {/* Generate button */}
+            <div className="flex justify-center">
+              <Button 
+                size="lg"
+                onClick={generateTestCases}
+                disabled={!url || isGenerating}
+                className="bg-gradient-to-r from-primary to-purple-500 hover:from-primary/90 hover:to-purple-600 transition-all duration-300 font-medium"
+              >
+                {isGenerating ? (
+                  <>
+                    <Bug className="mr-2 h-5 w-5 animate-spin" />
+                    Crawling Website...
+                  </>
+                ) : (
+                  <>
+                    <Database className="mr-2 h-5 w-5" />
+                    Generate Test Cases
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+        </div>
         
-        <TabsContent value="test-cases">
-          <TestCaseList
-            testCases={testCases}
-            onRunTest={runTestCase}
-            onRunAll={runAllTests}
-            isGenerating={isGenerating}
-          />
-        </TabsContent>
+        {/* Workflow Steps */}
+        <div className="flex justify-between items-center mb-6 px-4 py-2 bg-muted/50 rounded-lg">
+          <div className="flex items-center">
+            <div className={`rounded-full h-8 w-8 flex items-center justify-center ${activeTab === 'knowledge-base' ? 'bg-primary text-primary-foreground' : 'bg-muted-foreground/30 text-muted-foreground'}`}>
+              <Database size={16} />
+            </div>
+            <span className="ml-2 text-sm font-medium">Knowledge Base</span>
+          </div>
+          <ChevronRight className="text-muted-foreground" size={16} />
+          <div className="flex items-center">
+            <div className={`rounded-full h-8 w-8 flex items-center justify-center ${activeTab === 'test-cases' ? 'bg-primary text-primary-foreground' : 'bg-muted-foreground/30 text-muted-foreground'}`}>
+              <FileText size={16} />
+            </div>
+            <span className="ml-2 text-sm font-medium">Test Cases</span>
+          </div>
+          <ChevronRight className="text-muted-foreground" size={16} />
+          <div className="flex items-center">
+            <div className={`rounded-full h-8 w-8 flex items-center justify-center ${activeTab === 'results' ? 'bg-primary text-primary-foreground' : 'bg-muted-foreground/30 text-muted-foreground'}`}>
+              <Play size={16} />
+            </div>
+            <span className="ml-2 text-sm font-medium">Results</span>
+          </div>
+        </div>
         
-        <TabsContent value="results">
-          <TestResultsView results={testResults} />
-        </TabsContent>
-      </Tabs>
+        {/* Main Content Tabs */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
+          <TabsList className="grid grid-cols-3 mb-6 w-full">
+            <TabsTrigger value="knowledge-base" className="flex items-center gap-2">
+              <Database size={16} />
+              Knowledge Base
+            </TabsTrigger>
+            <TabsTrigger value="test-cases" className="flex items-center gap-2">
+              <FileText size={16} />
+              Test Cases
+            </TabsTrigger>
+            <TabsTrigger value="results" className="flex items-center gap-2">
+              <Play size={16} />
+              Results
+            </TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="knowledge-base" className="animate-fade-in">
+            <KnowledgeBaseEditor
+              initialKnowledgeBase={knowledgeBase}
+              onUpdate={handleKnowledgeBaseUpdate}
+            />
+          </TabsContent>
+          
+          <TabsContent value="test-cases" className="animate-fade-in">
+            <TestCaseList
+              testCases={testCases}
+              onRunTest={runTestCase}
+              onRunAll={runAllTests}
+              isGenerating={isGenerating}
+            />
+          </TabsContent>
+          
+          <TabsContent value="results" className="animate-fade-in">
+            <TestResultsView results={testResults} />
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   );
 };
